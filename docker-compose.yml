@@ -1,0 +1,19 @@
+name: lamvng-finance-tracker
+
+services:
+  postgres:
+    image: postgres:16.3-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=records
+
+volumes:
+  postgres-data:
+
+networks:
+  default:

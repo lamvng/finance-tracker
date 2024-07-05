@@ -1,2 +1,3 @@
-# finance-tracker
-Track and analyse your financial spending and savings
+# Personal finance tracker
+
+Track and analyse your financial spendings and savings.
