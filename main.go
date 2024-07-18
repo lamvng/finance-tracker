@@ -1,7 +1,11 @@
 package main
 
-// import (
-// 	"net/http"
+import (
+	"fmt"
+	"lamvng/finance-tracker/db"
+)
 
-// 	"github.com/gin-gonic/gin"
-// )
+func main() {
+	DB := db.Init()
+	fmt.Println(DB)
+}
