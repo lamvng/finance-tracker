@@ -71,7 +71,7 @@ type DailyOperation struct {
 	Base
 	User        User                 `json:"user" gorm:"index"`
 	SubCategory OperationSubCategory `json:"subcategory" gorm:"index"`
-	DateTime    time.Time            `json:"time" gorm:"index"`
+	ExecutedAt  time.Time            `json:"executedat" gorm:"index"`
 	Amount      float32              `json:"amount" gorm:"index"`
 }
 
