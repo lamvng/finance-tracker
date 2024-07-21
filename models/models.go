@@ -65,12 +65,25 @@ type OperationSubCategory struct {
 	Category    OperationCategory `json:"category"`
 }
 
-// Operation detail
-type Operation struct {
+// Day-to-day operation details
+// Spending & Income
+type DailyOperation struct {
 	Base
-	User        User                 `json:"user"`
-	SubCategory OperationSubCategory `json:"subcategory"`
+	User        User                 `json:"user" gorm:"index"`
+	SubCategory OperationSubCategory `json:"subcategory" gorm:"index"`
+	DateTime    time.Time            `json:"time" gorm:"index"`
+	Amount      float32              `json:"amount" gorm:"index"`
 }
+
+// // Investment operation details
+// // Buying & Selling stocks, commodities...
+// type InvestmentOperation struct {
+// 	Base
+// 	User        User                 `json:"user" gorm:"index"`
+// 	SubCategory OperationSubCategory `json:"subcategory" gorm:"index"`
+// 	DateTime    time.Time            `json:"time" gorm:"index"`
+// 	Amount      float32              `json:"amount" gorm:"index"`
+// }
 
 type User struct {
 	Base
