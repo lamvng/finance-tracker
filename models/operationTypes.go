@@ -7,15 +7,6 @@ import (
 // Note: I name the object "Operation" instead of "Transaction"
 // To not confuse with DB Transaction.
 
-// Type of assets
-// Fixed by program. Eg: Liquid, commodities, real estate, bonds, stocks
-// Note: This name is not "technically" (financially) correct in some cases. Anyways...
-type AssetType struct {
-	Base
-	Name        string `json:"name" gorm:"uniqueIndex"`
-	Description string `json:"description"`
-}
-
 // General type of an operation
 // Each type should be associated to an AccountType.
 // Eg. Buying (groceries), selling (stocks)...

@@ -19,6 +19,7 @@ type Account struct {
 	Base
 	Name        string    `json:"name" gorm:"uniqueIndex"`
 	Description string    `json:"description"`
-	TypeID      uuid.UUID `json:"typeId"`
+	TypeID      uuid.UUID `json:"typeId" gorm:"index"`
+	AssetUnitID uuid.UUID `json:"assetUnitId" gorm:"index"`
 	Balance     float32   `json:"balance"`
 }
