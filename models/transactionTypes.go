@@ -25,7 +25,7 @@ type TransactionCategory struct {
 	Base
 	Name          string                   `json:"name" gorm:"index"`
 	Description   *string                  `json:"description"`
-	User          User                     `json:"user"`
+	UserID        uuid.UUID                `json:"user"`
 	TypeID        uuid.UUID                `json:"typeId"`
 	SubCategories []TransactionSubCategory `gorm:"foreignKey:CategoryID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
@@ -36,5 +36,6 @@ type TransactionSubCategory struct {
 	Base
 	Name        string    `json:"name" gorm:"index"`
 	Description *string   `json:"description"`
+	UserID      uuid.UUID `json:"user"`
 	CategoryID  uuid.UUID `json:"categoryId"`
 }
