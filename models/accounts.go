@@ -7,10 +7,10 @@ import "github.com/google/uuid"
 // Everyday account, saving bonds, stock...
 type AccountType struct {
 	Base
-	Name             string                   `json:"name" gorm:"uniqueIndex"`
-	Description      *string                  `json:"description"`
-	Accounts         []Account                `gorm:"foreignKey:AccountTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	TransactionTypes []TransactionGeneralType `gorm:"foreignKey:AccountTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name             string            `json:"name" gorm:"uniqueIndex"`
+	Description      *string           `json:"description"`
+	Accounts         []Account         `gorm:"foreignKey:AccountTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	TransactionTypes []TransactionType `gorm:"foreignKey:AccountTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 // User account
@@ -20,6 +20,7 @@ type Account struct {
 	Name          string                `json:"name" gorm:"uniqueIndex"`
 	Description   *string               `json:"description"`
 	AccountTypeID uuid.UUID             `json:"accountTypeId" gorm:"index"`
+	UserID        uuid.UUID             `json:"userId" gorm:"index"`
 	AssetUnitID   uuid.UUID             `json:"assetUnitId" gorm:"index"`
 	Balance       float32               `json:"balance"`
 	Transactions  []EverydayTransaction `gorm:"foreignKey:AccountID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`

@@ -10,7 +10,7 @@ import (
 // General type of an transaction
 // Each type should be associated to an AccountType.
 // Eg. Buying (groceries), selling (stocks)...
-type TransactionGeneralType struct {
+type TransactionType struct {
 	Base
 	Name          string                `json:"name" gorm:"uniqueIndex"`
 	Description   *string               `json:"description"`
@@ -23,11 +23,11 @@ type TransactionGeneralType struct {
 // Defined by user
 type TransactionCategory struct {
 	Base
-	Name              string                   `json:"name" gorm:"index"`
-	Description       *string                  `json:"description"`
-	UserID            uuid.UUID                `json:"user"`
-	TransactionTypeID uuid.UUID                `json:"transactionTypeId"`
-	SubCategories     []TransactionSubCategory `gorm:"foreignKey:CategoryID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name                     string                   `json:"name" gorm:"index"`
+	Description              *string                  `json:"description"`
+	UserID                   uuid.UUID                `json:"user"`
+	TransactionTypeID        uuid.UUID                `json:"transactionTypeId"`
+	TransactionSubCategories []TransactionSubCategory `gorm:"foreignKey:TransactionCategoryID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 // Subcategory
@@ -37,5 +37,5 @@ type TransactionSubCategory struct {
 	Name        string    `json:"name" gorm:"index"`
 	Description *string   `json:"description"`
 	UserID      uuid.UUID `json:"user"`
-	CategoryID  uuid.UUID `json:"categoryId"`
+	CategoryID  uuid.UUID `json:"transactionCategoryId"`
 }
