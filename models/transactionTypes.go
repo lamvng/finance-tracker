@@ -12,10 +12,10 @@ import (
 // Eg. Buying (groceries), selling (stocks)...
 type TransactionType struct {
 	Base
-	Name          string                `json:"name" gorm:"uniqueIndex"`
-	Description   *string               `json:"description"`
-	AccountTypeID uuid.UUID             `json:"accountTypeId"`
-	Categories    []TransactionCategory `gorm:"foreignKey:TransactionTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name                  string                `json:"name" gorm:"uniqueIndex"`
+	Description           *string               `json:"description"`
+	AccountTypeID         uuid.UUID             `json:"accountTypeId" gorm:"index"`
+	TransactionCategories []TransactionCategory `gorm:"foreignKey:TransactionTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 // Transaction category
@@ -25,8 +25,8 @@ type TransactionCategory struct {
 	Base
 	Name                     string                   `json:"name" gorm:"index"`
 	Description              *string                  `json:"description"`
-	UserID                   uuid.UUID                `json:"user"`
-	TransactionTypeID        uuid.UUID                `json:"transactionTypeId"`
+	UserID                   uuid.UUID                `json:"userId" gorm:"index"`
+	TransactionTypeID        uuid.UUID                `json:"transactionTypeId" gorm:"index"`
 	TransactionSubCategories []TransactionSubCategory `gorm:"foreignKey:TransactionCategoryID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
@@ -34,8 +34,10 @@ type TransactionCategory struct {
 // Detailed action, eg: Groceries
 type TransactionSubCategory struct {
 	Base
-	Name        string    `json:"name" gorm:"index"`
-	Description *string   `json:"description"`
-	UserID      uuid.UUID `json:"user"`
-	CategoryID  uuid.UUID `json:"transactionCategoryId"`
+	Name               string              `json:"name" gorm:"index"`
+	Description        *string             `json:"description"`
+	UserID             uuid.UUID           `json:"userId" gorm:"index"`
+	CategoryID         uuid.UUID           `json:"transactionCategoryId" gorm:"index"`
+	AssetTransactions  []AssetTransaction  `gorm:"foreignKey:TransactionSubCategoryID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	LiquidTransactions []LiquidTransaction `gorm:"foreignKey:TransactionSubCategoryID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

@@ -16,8 +16,9 @@ type AssetType struct {
 // Fixed by program. Eg: Ounce (gold), USD/CNY/EUR/JPY... (Currency)
 type AssetUnit struct {
 	Base
-	Name        string    `json:"name" gorm:"uniqueIndex"`
-	Description *string   `json:"description"`
-	AssetTypeID uuid.UUID `json:"assetTypeId"`
-	Accounts    []Account `gorm:"foreignKey:AssetUnitID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name              string             `json:"name" gorm:"uniqueIndex"`
+	Description       *string            `json:"description"`
+	AssetTypeID       uuid.UUID          `json:"assetTypeId"`
+	AssetAccounts     []*AssetAccount    `gorm:"many2many:asset_account_portfolios"`
+	AssetTransactions []AssetTransaction `gorm:"foreignKey:AssetUnitID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
