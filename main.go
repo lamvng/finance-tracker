@@ -1,11 +1,26 @@
 package main
 
 import (
-	"fmt"
 	"lamvng/finance-tracker/db"
+	"lamvng/finance-tracker/models"
 )
 
 func main() {
-	DB := db.Init()
-	fmt.Println(DB)
+	db := db.Init()
+
+	db.AutoMigrate(
+		&models.AssetType{},
+		&models.AssetUnit{},
+		&models.LiquidCurrency{},
+		&models.AccountType{},
+		&models.User{},
+		&models.AssetAccountPortfolio{},
+		&models.AssetAccount{},
+		&models.LiquidAccount{},
+		&models.TransactionType{},
+		&models.TransactionCategory{},
+		&models.TransactionSubCategory{},
+		&models.LiquidTransaction{},
+		&models.AssetTransaction{},
+	)
 }

@@ -9,8 +9,9 @@ type AccountType struct {
 	Base
 	Name             string            `json:"name" gorm:"uniqueIndex"`
 	Description      *string           `json:"description"`
-	Accounts         []AssetAccount    `gorm:"foreignKey:AccountTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	TransactionTypes []TransactionType `gorm:"foreignKey:AccountTypeID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	AssetAccounts    []*AssetAccount   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	LiquidAccounts   []*LiquidAccount  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	TransactionTypes []TransactionType `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 // User asset account portfolios
@@ -26,22 +27,22 @@ type AssetAccountPortfolio struct {
 // Defined by user
 type AssetAccount struct {
 	Base
-	Name             string             `json:"name" gorm:"uniqueIndex"`
-	Description      *string            `json:"description"`
-	LiquidBalance    float32            `json:"liquidBalance"`
-	LiquidCurrencyID uuid.UUID          `json:"liquidCurrencyId" gorm:"index"`
-	AccountTypeID    uuid.UUID          `json:"accountTypeId" gorm:"index"`
-	UserID           uuid.UUID          `json:"userId" gorm:"index"`
-	Transactions     []AssetTransaction `gorm:"foreignKey:AssetAccountID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name             string              `json:"name" gorm:"uniqueIndex"`
+	Description      *string             `json:"description"`
+	LiquidBalance    float32             `json:"liquidBalance"`
+	LiquidCurrencyID uuid.UUID           `json:"liquidCurrencyId" gorm:"index"`
+	AccountTypeID    uuid.UUID           `json:"accountTypeId" gorm:"index"`
+	UserID           uuid.UUID           `json:"userId" gorm:"index"`
+	Transactions     []*AssetTransaction `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type LiquidAccount struct {
 	Base
-	Name             string              `json:"name" gorm:"uniqueIndex"`
-	Description      *string             `json:"description"`
-	Balance          float32             `json:"balance"`
-	LiquidCurrencyID uuid.UUID           `json:"liquidCurrencyId" gorm:"index"`
-	AccountTypeID    uuid.UUID           `json:"accountTypeId" gorm:"index"`
-	UserID           uuid.UUID           `json:"userId" gorm:"index"`
-	Transactions     []LiquidTransaction `gorm:"foreignKey:LiquidAccountID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name             string               `json:"name" gorm:"uniqueIndex"`
+	Description      *string              `json:"description"`
+	Balance          float32              `json:"balance"`
+	LiquidCurrencyID uuid.UUID            `json:"liquidCurrencyId" gorm:"index"`
+	AccountTypeID    uuid.UUID            `json:"accountTypeId" gorm:"index"`
+	UserID           uuid.UUID            `json:"userId" gorm:"index"`
+	Transactions     []*LiquidTransaction `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

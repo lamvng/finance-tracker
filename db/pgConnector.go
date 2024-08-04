@@ -22,10 +22,8 @@ func Init() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Failed to connect to dataase: %s\n", err)
 	}
-
-	// db.AutoMigrate(&models.Book{})
 
 	return db
 }
