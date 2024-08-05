@@ -3,7 +3,7 @@ name: lamvng-finance-tracker
 services:
   postgres:
     image: postgres:16.3-alpine
-    container_name: finance-tracker-db
+    container_name: lamvng-finance-tracker-db
     ports:
       - 5432:5432
     volumes:
@@ -13,7 +13,19 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_DB: finance-tracker
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 6673a613-b827-46ed-90dc-3295c4bdef89
+      POSTGRES_PASSWORD: mOXTlNs4ubMctoNigdRF
+
+  redis:
+    image: redis:7.4.0-alpine3.20
+    container_name: lamvng-finance-tracker-redis
+    ports:
+    - 6379:6379
+    environment:
+      REDIS_HOST: 0.0.0.0
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      REDIS_PASSWORD: ULVoM5RV2HVq3cMZdMeu
+      REDIS_TLS: false
 
 
 volumes:

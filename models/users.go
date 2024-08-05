@@ -5,7 +5,7 @@ type User struct {
 	FirstName             string                `json:"firstname"`
 	LastName              string                `json:"lastname"`
 	Username              string                `json:"username" gorm:"uniqueIndex"`
-	Email                 string                `json:"email" gorm:"uniqueIndex"`
+	Email                 string                `json:"email"`
 	PasswordSalt          string                `json:"passwordsalt"`
 	PasswordHash          string                `json:"passwordhash"`
 	AssetAccounts         []*AssetAccount       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
