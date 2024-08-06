@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 func CreateUser(c *gin.Context) {
@@ -24,7 +23,7 @@ func CreateUser(c *gin.Context) {
 
 	// Verify if username exists
 	userFound := database.Db.Where("username = ?", newUser.Username).Take(&users)
-	if userFound.Error == gorm.ErrRecordNotFound {
+	if userFound.Error == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
 		return
 	}
@@ -39,6 +38,9 @@ func CreateUser(c *gin.Context) {
 	// Create user on DB
 	user := models.User{
 		Username:     newUser.Username,
+		FirstName:    newUser.FirstName,
+		LastName:     newUser.LastName,
+		Email:        newUser.Email,
 		PasswordHash: string(passwordHash),
 	}
 	database.Db.Create(&user)
