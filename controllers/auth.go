@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"lamvng/finance-tracker/initializers"
+	"lamvng/finance-tracker/database"
 	"lamvng/finance-tracker/models"
 	"net/http"
 
@@ -23,7 +23,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	// Verify if username exists
-	userFound := initializers.Db.Where("username = ?", newUser.Username).Take(&users)
+	userFound := database.Db.Where("username = ?", newUser.Username).Take(&users)
 	if userFound.Error == gorm.ErrRecordNotFound {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
 		return
@@ -41,7 +41,7 @@ func CreateUser(c *gin.Context) {
 		Username:     newUser.Username,
 		PasswordHash: string(passwordHash),
 	}
-	initializers.Db.Create(&user)
+	database.Db.Create(&user)
 
 	// Return OK status
 	c.JSON(http.StatusOK, gin.H{"data": user})
