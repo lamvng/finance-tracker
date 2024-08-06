@@ -1,4 +1,4 @@
-package repositories
+package initializers
 
 import (
 	"fmt"
@@ -19,13 +19,13 @@ func initPostGresConnection() *gorm.DB {
 
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", postgresUser, postgresPassword, postgresHost, postgresPort, postgresDB)
 
-	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
+	Db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
 	if err != nil {
 		log.Fatalf("Failed to connect to Postgres: %s\n", err)
 	}
 
-	db.AutoMigrate(
+	Db.AutoMigrate(
 		&models.AssetType{},
 		&models.AssetUnit{},
 		&models.LiquidCurrency{},
@@ -41,5 +41,5 @@ func initPostGresConnection() *gorm.DB {
 		&models.AssetTransaction{},
 	)
 
-	return db
+	return Db
 }

@@ -1,4 +1,4 @@
-package repositories
+package initializers
 
 import (
 	"fmt"
@@ -17,10 +17,10 @@ func initRedisConnection() *redis.Client {
 
 	redisURL := fmt.Sprintf("redis://%s:%s@%s:%s/%s", redisUser, redisPassword, redisHost, redisPort, redisDB)
 
-	opt, err := redis.ParseURL(redisURL)
+	Opt, err := redis.ParseURL(redisURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to Redis: %s\n", err)
 	}
 
-	return redis.NewClient(opt)
+	return redis.NewClient(Opt)
 }
