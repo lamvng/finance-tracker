@@ -7,9 +7,9 @@ type User struct {
 	Username              string                `json:"userName" gorm:"uniqueIndex"`
 	Email                 string                `json:"email"`
 	PasswordHash          string                `json:"passwordHash"`
-	AssetAccounts         []*AssetAccount       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	LiquidAccounts        []*LiquidAccount      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	TransactionCategories []TransactionCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	AssetAccounts         []*AssetAccount       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	LiquidAccounts        []*LiquidAccount      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	TransactionCategories []TransactionCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type CreateUserInput struct {

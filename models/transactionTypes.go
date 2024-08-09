@@ -15,7 +15,7 @@ type TransactionType struct {
 	Name                  string                 `json:"name" gorm:"uniqueIndex"`
 	Description           *string                `json:"description"`
 	AccountTypeID         uuid.UUID              `json:"accountTypeId" gorm:"index"`
-	TransactionCategories []*TransactionCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	TransactionCategories []*TransactionCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // Transaction category
@@ -27,7 +27,7 @@ type TransactionCategory struct {
 	Description              *string                  `json:"description"`
 	UserID                   uuid.UUID                `json:"userId" gorm:"index"`
 	TransactionTypeID        uuid.UUID                `json:"transactionTypeId" gorm:"index"`
-	TransactionSubCategories []TransactionSubCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	TransactionSubCategories []TransactionSubCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // Subcategory
