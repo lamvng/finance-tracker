@@ -15,7 +15,7 @@ type TransactionType struct {
 	Name                  string                 `json:"name" gorm:"uniqueIndex"`
 	Description           *string                `json:"description"`
 	AccountTypeID         uuid.UUID              `json:"accountTypeId" gorm:"index"`
-	TransactionCategories []*TransactionCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	TransactionCategories []*TransactionCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
 }
 
 // Transaction category
@@ -23,21 +23,22 @@ type TransactionType struct {
 // Defined by user
 type TransactionCategory struct {
 	Base
-	Name                     string                   `json:"name" gorm:"index"`
-	Description              *string                  `json:"description"`
-	UserID                   uuid.UUID                `json:"userId" gorm:"index"`
-	TransactionTypeID        uuid.UUID                `json:"transactionTypeId" gorm:"index"`
-	TransactionSubCategories []TransactionSubCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Name                     string                    `json:"name" gorm:"index"`
+	Description              *string                   `json:"description"`
+	UserID                   uuid.UUID                 `json:"userId" gorm:"index"`
+	TransactionTypeID        uuid.UUID                 `json:"transactionTypeId" gorm:"index"`
+	TransactionSubCategories []*TransactionSubCategory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // Subcategory
 // Detailed action, eg: Groceries
 type TransactionSubCategory struct {
 	Base
-	Name                  string              `json:"name" gorm:"index"`
-	Description           *string             `json:"description"`
-	UserID                uuid.UUID           `json:"userId" gorm:"index"`
-	TransactionCategoryID uuid.UUID           `json:"transactionCategoryId" gorm:"index"`
-	AssetTransactions     []AssetTransaction  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	LiquidTransactions    []LiquidTransaction `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name                       string                       `json:"name" gorm:"index"`
+	Description                *string                      `json:"description"`
+	TransactionCategoryID      uuid.UUID                    `json:"transactionCategoryId" gorm:"index"`
+	InvestmentTransactions     []*InvestmentTransaction     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
+	LiquidSpendingTransactions []*LiquidSpendingTransaction `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
+	InternalLiquidTransactions []*InternalLiquidTransaction `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
+	BudgetCategories           []*BudgetCategory            `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
 }

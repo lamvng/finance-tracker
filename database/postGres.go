@@ -26,19 +26,25 @@ func initPostGresConnection() *gorm.DB {
 	}
 
 	Db.AutoMigrate(
+		&models.AccountType{},
 		&models.AssetType{},
 		&models.AssetUnit{},
-		&models.LiquidCurrency{},
-		&models.AccountType{},
+		&models.AssetUnitExchangeRate{},
 		&models.User{},
-		&models.AssetAccountPortfolio{},
-		&models.AssetAccount{},
-		&models.LiquidAccount{},
+		&models.Lender{},
+		&models.Account{},
 		&models.TransactionType{},
 		&models.TransactionCategory{},
 		&models.TransactionSubCategory{},
-		&models.LiquidTransaction{},
-		&models.AssetTransaction{},
+		&models.InvestmentAccount{},
+		&models.LiquidSavingAccount{},
+		&models.LiquidSpendingAccount{},
+		&models.LiquidSpendingBudget{},
+		&models.InvestmentAccountPortfolio{},
+		&models.InvestmentTransaction{},
+		&models.LiquidSpendingTransaction{},
+		&models.LendingTransaction{},
+		&models.BudgetCategory{},
 	)
 
 	return Db
