@@ -8,6 +8,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.POST("/auth/signup", controllers.CreateUser)
+	router.POST("/login", controllers.Login)      // Login
+	router.POST("/users", controllers.CreateUser) // Create new user
 	router.Run()
 }

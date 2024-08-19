@@ -23,3 +23,6 @@ go.work.sum
 
 # # Local env
 # .env
+
+# Dev client
+*.http

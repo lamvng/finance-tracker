@@ -19,13 +19,13 @@ func initPostGresConnection() *gorm.DB {
 
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", postgresUser, postgresPassword, postgresHost, postgresPort, postgresDB)
 
-	Db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
+	DB, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
 	if err != nil {
 		log.Fatalf("Failed to connect to Postgres: %s\n", err)
 	}
 
-	Db.AutoMigrate(
+	DB.AutoMigrate(
 		&models.AccountType{},
 		&models.AssetType{},
 		&models.AssetUnit{},
@@ -47,5 +47,5 @@ func initPostGresConnection() *gorm.DB {
 		&models.BudgetCategory{},
 	)
 
-	return Db
+	return DB
 }

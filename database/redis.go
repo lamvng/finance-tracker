@@ -3,8 +3,8 @@ package database
 import (
 	"fmt"
 	"lamvng/finance-tracker/configs"
-	"log"
 
+	"github.com/golang/glog"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -19,7 +19,7 @@ func initRedisConnection() *redis.Client {
 
 	Opt, err := redis.ParseURL(redisURL)
 	if err != nil {
-		log.Fatalf("Failed to connect to Redis: %s\n", err)
+		glog.Fatalf("Failed to connect to Redis: %s\n", err)
 	}
 
 	return redis.NewClient(Opt)

@@ -1,19 +1,20 @@
 package configs
 
 import (
-	"log"
 	"os"
+
+	"github.com/golang/glog"
 
 	"github.com/joho/godotenv"
 )
 
-func GetEnvVariables(key string) string {
-
+func init() {
 	err := godotenv.Load(".env")
-
 	if err != nil {
-		log.Fatalln(err)
+		glog.Fatal(err)
 	}
+}
 
+func GetEnvVariables(key string) string {
 	return os.Getenv(key)
 }
