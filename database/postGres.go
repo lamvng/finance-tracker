@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"lamvng/finance-tracker/configs"
-	"lamvng/finance-tracker/models"
+	"lamvng/finance-tracker/model"
 	"log"
 
 	"gorm.io/driver/postgres"
@@ -26,25 +26,25 @@ func initPostGresConnection() *gorm.DB {
 	}
 
 	DB.AutoMigrate(
-		&models.AccountType{},
-		&models.AssetType{},
-		&models.AssetUnit{},
-		&models.AssetUnitExchangeRate{},
-		&models.User{},
-		&models.Lender{},
-		&models.Account{},
-		&models.TransactionType{},
-		&models.TransactionCategory{},
-		&models.TransactionSubCategory{},
-		&models.InvestmentAccount{},
-		&models.LiquidSavingAccount{},
-		&models.LiquidSpendingAccount{},
-		&models.LiquidSpendingBudget{},
-		&models.InvestmentAccountPortfolio{},
-		&models.InvestmentTransaction{},
-		&models.LiquidSpendingTransaction{},
-		&models.LendingTransaction{},
-		&models.BudgetCategory{},
+		&model.AccountType{},
+		&model.AssetType{},
+		&model.AssetUnit{},
+		&model.AssetUnitExchangeRate{},
+		&model.User{},
+		&model.Lender{},
+		&model.Account{},
+		&model.TransactionType{},
+		&model.TransactionCategory{},
+		&model.TransactionSubCategory{},
+		&model.InvestmentAccount{},
+		&model.LiquidSavingAccount{},
+		&model.LiquidSpendingAccount{},
+		&model.LiquidSpendingBudget{},
+		&model.InvestmentAccountPortfolio{},
+		&model.InvestmentTransaction{},
+		&model.LiquidSpendingTransaction{},
+		&model.LendingTransaction{},
+		&model.BudgetCategory{},
 	)
 
 	return DB

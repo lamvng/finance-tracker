@@ -1,11 +1,11 @@
-package middlewares
+package middleware
 
 import (
 	"fmt"
+	"lamvng/finance-tracker/configs"
 	"lamvng/finance-tracker/database"
-	"lamvng/finance-tracker/models"
+	"lamvng/finance-tracker/model"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -15,7 +15,7 @@ import (
 
 func CheckAuth(c *gin.Context) {
 
-	// Find authorization token
+	// Find authorization token in header
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
@@ -23,6 +23,7 @@ func CheckAuth(c *gin.Context) {
 		return
 	}
 
+	// Verify token format
 	authToken := strings.Split(authHeader, " ")
 	if len(authToken) != 2 || authToken[0] != "Bearer" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
@@ -30,23 +31,24 @@ func CheckAuth(c *gin.Context) {
 		return
 	}
 
+	// Verify token
 	tokenString := authToken[1]
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("SECRET")), nil
+		return []byte(configs.GetEnvVariables("JWT_TOKEN_SECRET")), nil
 	})
 	if err != nil || !token.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
@@ -56,7 +58,7 @@ func CheckAuth(c *gin.Context) {
 		return
 	}
 
-	var user models.User
+	var user model.User
 	error := database.DB.Where("ID=?", claims["id"]).Find(&user).Error
 
 	if error != nil {

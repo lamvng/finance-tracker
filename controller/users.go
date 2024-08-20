@@ -1,8 +1,9 @@
-package controllers
+package controller
 
 import (
 	"lamvng/finance-tracker/database"
-	"lamvng/finance-tracker/models"
+	"lamvng/finance-tracker/model"
+	"lamvng/finance-tracker/request"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,8 +13,8 @@ import (
 
 func CreateUser(c *gin.Context) {
 
-	var userFound models.User
-	var newUser models.CreateUserInput
+	var userFound model.User
+	var newUser request.CreateUserInput
 
 	// Verify input
 	if err := c.ShouldBindBodyWith(&newUser, binding.JSON); err != nil {
@@ -35,7 +36,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	// Create user on DB
-	user := models.User{
+	user := model.User{
 		Username:     newUser.Username,
 		FirstName:    newUser.FirstName,
 		LastName:     newUser.LastName,
