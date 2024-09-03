@@ -6,7 +6,7 @@ type User struct {
 	LastName              string                  `json:"lastName"`
 	Username              string                  `json:"userName" gorm:"uniqueIndex"`
 	Email                 string                  `json:"email"`
-	PasswordHash          string                  `json:"passwordHash"`
+	PasswordHash          string                  `json:"-"`
 	Accounts              []*Account              `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	TransactionCategories []*TransactionCategory  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	LiquidSpendingBudget  []*LiquidSpendingBudget `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

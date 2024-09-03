@@ -20,7 +20,6 @@ func initPostGresConnection() *gorm.DB {
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", postgresUser, postgresPassword, postgresHost, postgresPort, postgresDB)
 
 	DB, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
-
 	if err != nil {
 		log.Fatalf("Failed to connect to Postgres: %s\n", err)
 	}

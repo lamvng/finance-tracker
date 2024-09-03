@@ -1,9 +1,9 @@
 package controller
 
 import (
+	"lamvng/finance-tracker/data/request"
 	"lamvng/finance-tracker/database"
 	"lamvng/finance-tracker/model"
-	"lamvng/finance-tracker/request"
 	"net/http"
 	"os"
 	"time"
@@ -16,7 +16,7 @@ import (
 
 func Login(c *gin.Context) {
 
-	var authInput request.AuthenticationInput
+	var authInput request.AuthenticationRequest
 
 	if err := c.ShouldBindJSON(&authInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -25,8 +25,7 @@ func Login(c *gin.Context) {
 
 	// Username not found
 	var userFound model.User
-	err := database.DB.Where("username=?", authInput.Username).Find(&userFound).Error
-	if err != nil {
+	if err := database.DB.Where("username=?", authInput.Username).Find(&userFound).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password not correct"})
 		return
 	}
