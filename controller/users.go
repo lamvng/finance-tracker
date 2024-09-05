@@ -2,49 +2,37 @@ package controller
 
 import (
 	"lamvng/finance-tracker/data/request"
-	"lamvng/finance-tracker/database"
-	"lamvng/finance-tracker/model"
+	"lamvng/finance-tracker/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUser(c *gin.Context) {
+// type UserControllerInterface interface {
+// 	// GetByID(c *gin.Context)
+// 	Create(c *gin.Context)
+// 	// Update(c *gin.Context)
+// 	// Delete(c *gin.Context)
+// }
 
-	var userFound model.User
+type UserController struct {
+	userService service.UserServiceInterface
+}
+
+func NewUserController(service service.UserServiceInterface) (userController *UserController) {
+	return &UserController{userService: service}
+}
+
+func (ctl *UserController) Create(c *gin.Context) {
 	var newUser request.CreateUserRequest
-
-	// Verify input
 	if err := c.ShouldBindBodyWith(&newUser, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	// Verify if username exists
-	if err := database.DB.Where("username = ?", newUser.Username).Take(&userFound).Error; err == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
-		return
-	}
-
-	// Create password salt & hash
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	err := ctl.userService.Create(newUser)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
-
-	// Create user on DB
-	user := model.User{
-		Username:     newUser.Username,
-		FirstName:    newUser.FirstName,
-		LastName:     newUser.LastName,
-		Email:        newUser.Email,
-		PasswordHash: string(passwordHash),
-	}
-	database.DB.Create(&user)
-
-	// Return OK status
-	c.JSON(http.StatusOK, gin.H{"message": "user created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"status": "user created"})
 }

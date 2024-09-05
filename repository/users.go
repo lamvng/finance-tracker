@@ -7,22 +7,24 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRepository interface {
+type UserRepositoryInterface interface {
 	GetByID(id uuid.UUID) (model.User, error)
+	GetByUsername(username string) (model.User, error)
+	GetByEmail(email string) (model.User, error)
 	Create(user model.User) error
-	Update(id uuid.UUID, user model.User) (model.User, error)
-	Delete(id uuid.UUID) error
+	Update(user model.User) error
+	Delete(user model.User) error
 }
 
-type UserRepositoryImpl struct {
+type UserRepository struct {
 	Db *gorm.DB
 }
 
-func NewUserRepository(Db *gorm.DB) UserRepository {
-	return &UserRepositoryImpl{Db: Db}
+func NewUserRepository(Db *gorm.DB) UserRepositoryInterface {
+	return &UserRepository{Db: Db}
 }
 
-func (r *UserRepositoryImpl) GetByID(id uuid.UUID) (model.User, error) {
+func (r *UserRepository) GetByID(id uuid.UUID) (model.User, error) {
 	var user model.User
 	if err := r.Db.First(&user, id).Error; err != nil {
 		return model.User{}, err
@@ -30,40 +32,42 @@ func (r *UserRepositoryImpl) GetByID(id uuid.UUID) (model.User, error) {
 	return user, nil
 }
 
-func (r *UserRepositoryImpl) Create(user model.User) error {
+func (r *UserRepository) GetByUsername(username string) (model.User, error) {
+	var user model.User
+	if err := r.Db.Where("username = ?", username).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
+	return user, nil
+}
+
+func (r *UserRepository) GetByEmail(email string) (model.User, error) {
+	var user model.User
+	if err := r.Db.Where("email = ?", email).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
+	return user, nil
+}
+
+func (r *UserRepository) Create(user model.User) error {
 	err := r.Db.Create(&user).Error
 	return err
 }
 
-func (r *UserRepositoryImpl) Update(id uuid.UUID, user model.User) (model.User, error) {
-
-	existingUser, err := r.GetByID(id)
-
-	// User does not exist
-	if err != nil {
-		return model.User{}, err
-	}
-
-	// Update user information
+func (r *UserRepository) Update(user model.User) error {
+	var updatedUser model.User
 	if user.PasswordHash != "" {
-		existingUser.PasswordHash = user.PasswordHash
+		updatedUser.PasswordHash = user.PasswordHash
 	}
-	existingUser.FirstName = user.FirstName
-	existingUser.LastName = user.LastName
-	existingUser.Username = user.Username
-	existingUser.Email = user.Email
+	updatedUser.FirstName = user.FirstName
+	updatedUser.LastName = user.LastName
+	updatedUser.Username = user.Username
+	updatedUser.Email = user.Email
 
-	if err := r.Db.Model(&user).Updates(existingUser).Error; err != nil {
-		return model.User{}, err
-	}
-	return existingUser, nil
+	err := r.Db.Model(&user).Updates(updatedUser).Error
+	return err
 }
 
-func (r *UserRepositoryImpl) Delete(id uuid.UUID) error {
-	existingUser, err := r.GetByID(id)
-	if err != nil {
-		return err
-	}
-	r.Db.Delete(&existingUser)
-	return nil
+func (r *UserRepository) Delete(user model.User) error {
+	err := r.Db.Delete(&user).Error
+	return err
 }

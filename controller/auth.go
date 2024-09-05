@@ -1,62 +1,48 @@
 package controller
 
-import (
-	"lamvng/finance-tracker/data/request"
-	"lamvng/finance-tracker/database"
-	"lamvng/finance-tracker/model"
-	"net/http"
-	"os"
-	"time"
+// func Login(c *gin.Context) {
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/golang/glog"
-	"golang.org/x/crypto/bcrypt"
-)
+// 	var authInput request.AuthenticationRequest
 
-func Login(c *gin.Context) {
+// 	if err := c.ShouldBindJSON(&authInput); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	var authInput request.AuthenticationRequest
+// 	// Username not found
+// 	var userFound model.User
+// 	if err := database.DB.Where("username=?", authInput.Username).Find(&userFound).Error; err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password not correct"})
+// 		return
+// 	}
 
-	if err := c.ShouldBindJSON(&authInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// 	// Password not correct
+// 	if err := bcrypt.CompareHashAndPassword([]byte(userFound.PasswordHash), []byte(authInput.Password)); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password not correct"})
+// 		return
+// 	}
 
-	// Username not found
-	var userFound model.User
-	if err := database.DB.Where("username=?", authInput.Username).Find(&userFound).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password not correct"})
-		return
-	}
+// 	// Create and send login token
+// 	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+// 		"username": userFound.Username,
+// 		"exp":      time.Now().Add(time.Hour * 1).Unix(),
+// 	})
+// 	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
+// 	}
+// 	glog.Errorf("Failed to generate token: %s\n", err)
 
-	// Password not correct
-	if err := bcrypt.CompareHashAndPassword([]byte(userFound.PasswordHash), []byte(authInput.Password)); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password not correct"})
-		return
-	}
+// 	c.JSON(200, gin.H{
+// 		"token": token,
+// 	})
+// }
 
-	// Create and send login token
-	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": userFound.Username,
-		"exp":      time.Now().Add(time.Hour * 1).Unix(),
-	})
-	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
-	}
-	glog.Errorf("Failed to generate token: %s\n", err)
+// func GetUserProfile(c *gin.Context) {
 
-	c.JSON(200, gin.H{
-		"token": token,
-	})
-}
+// 	user, _ := c.Get("currentUser")
 
-func GetUserProfile(c *gin.Context) {
-
-	user, _ := c.Get("currentUser")
-
-	c.JSON(200, gin.H{
-		"user": user,
-	})
-}
+// 	c.JSON(200, gin.H{
+// 		"user": user,
+// 	})
+// }

@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func initRedisConnection() *redis.Client {
+func InitRedisConnection() *redis.Client {
 	redisUser := configs.GetEnvVariables("REDIS_USER")
 	redisPassword := configs.GetEnvVariables("REDIS_PASSWORD")
 	redisDB := configs.GetEnvVariables("REDIS_DB")
