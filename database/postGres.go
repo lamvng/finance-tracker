@@ -10,11 +10,11 @@ import (
 )
 
 func InitPostGresConnection() *gorm.DB {
-	postgresUser := configs.GetEnvVariables("POSTGRES_USER")
-	postgresPassword := configs.GetEnvVariables("POSTGRES_PASSWORD")
-	postgresDB := configs.GetEnvVariables("POSTGRES_DB")
-	postgresHost := configs.GetEnvVariables("POSTGRES_HOST")
-	postgresPort := configs.GetEnvVariables("POSTGRES_PORT")
+	postgresUser := configs.GetEnv("POSTGRES_USER")
+	postgresPassword := configs.GetEnv("POSTGRES_PASSWORD")
+	postgresDB := configs.GetEnv("POSTGRES_DB")
+	postgresHost := configs.GetEnv("POSTGRES_HOST")
+	postgresPort := configs.GetEnv("POSTGRES_PORT")
 
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", postgresUser, postgresPassword, postgresHost, postgresPort, postgresDB)
 

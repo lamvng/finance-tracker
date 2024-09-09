@@ -9,11 +9,11 @@ import (
 )
 
 func InitRedisConnection() *redis.Client {
-	redisUser := configs.GetEnvVariables("REDIS_USER")
-	redisPassword := configs.GetEnvVariables("REDIS_PASSWORD")
-	redisDB := configs.GetEnvVariables("REDIS_DB")
-	redisHost := configs.GetEnvVariables("REDIS_HOST")
-	redisPort := configs.GetEnvVariables("REDIS_PORT")
+	redisUser := configs.GetEnv("REDIS_USER")
+	redisPassword := configs.GetEnv("REDIS_PASSWORD")
+	redisDB := configs.GetEnv("REDIS_DB")
+	redisHost := configs.GetEnv("REDIS_HOST")
+	redisPort := configs.GetEnv("REDIS_PORT")
 
 	redisURL := fmt.Sprintf("redis://%s:%s@%s:%s/%s", redisUser, redisPassword, redisHost, redisPort, redisDB)
 

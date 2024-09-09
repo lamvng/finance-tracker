@@ -14,6 +14,6 @@ func init() {
 	}
 }
 
-func GetEnvVariables(key string) string {
+func GetEnv(key string) string {
 	return os.Getenv(key)
 }

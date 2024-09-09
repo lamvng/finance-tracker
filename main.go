@@ -14,6 +14,9 @@ import (
 )
 
 func main() {
+
+	// TODO: Load config here, remove "configs" package
+
 	// Init database connections
 	glog.Infoln("Initiating database connections...")
 	db := database.InitPostGresConnection()

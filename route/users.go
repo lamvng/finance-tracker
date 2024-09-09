@@ -2,12 +2,13 @@ package route
 
 import (
 	"lamvng/finance-tracker/controller"
+	"lamvng/finance-tracker/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(router *gin.Engine, userController *controller.UserController) *gin.Engine {
+func RegisterUserRoutes(router *gin.Engine, userController controller.UserControllerInterface) *gin.Engine {
 
 	router.GET("", func(context *gin.Context) {
 		context.JSON(http.StatusOK, "welcome to homepage")
@@ -18,9 +19,17 @@ func RegisterUserRoutes(router *gin.Engine, userController *controller.UserContr
 	})
 
 	apiRouter := router.Group("/api")
+
+	// Unauthenticated requests
 	userRouter := apiRouter.Group("/users")
-	// tagRouter.GET("/:userId", userController.GetByID)
+	userRouter.POST("/login", userController.Auth)
 	userRouter.POST("", userController.Create)
+	userRouter.Use(middleware.TokenAuthMiddleware())
+	{
+		userRouter.GET("/:userId", userController.GetUserProfile)
+	}
+	// Authenticated requests
+
 	// tagRouter.PATCH("/:userId", userController.Update)
 	// tagRouter.DELETE("/:userId", userController.Delete)
 

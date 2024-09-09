@@ -2,18 +2,22 @@ package service
 
 import (
 	"errors"
+	"lamvng/finance-tracker/configs"
 	"lamvng/finance-tracker/data/request"
 	"lamvng/finance-tracker/data/response"
 	"lamvng/finance-tracker/model"
 	"lamvng/finance-tracker/repository"
+	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type UserServiceInterface interface {
+	Auth(request.AuthenticationRequest) (response.AuthenticationResponse, error)
 	GetByID(id uuid.UUID) (response.GetUserResponse, error)
 	Create(user request.CreateUserRequest) error
 	// Update(user request.UpdateUserRequest) error
@@ -30,6 +34,40 @@ func NewUserService(userRepository repository.UserRepositoryInterface, validate 
 		UserRepository: userRepository,
 		Validate:       validate,
 	}
+}
+
+func (s *UserService) Auth(authReq request.AuthenticationRequest) (response.AuthenticationResponse, error) {
+
+	// Find existing username
+	user, err := s.UserRepository.GetByUsername(authReq.Username)
+
+	// Username not found
+	if err != nil {
+		return response.AuthenticationResponse{}, err
+	}
+
+	// Calculate and compare password hash
+	authPasswordHash, err := bcrypt.GenerateFromPassword([]byte(authReq.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return response.AuthenticationResponse{}, err
+	}
+	if string(authPasswordHash) != user.PasswordHash {
+		return response.AuthenticationResponse{}, errors.New("password not correct")
+	}
+
+	// Calculate and return JWT token
+	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": user.Username,
+		"exp":      time.Now().Add(time.Hour * 1).Unix(),
+	})
+	token, err := generateToken.SignedString([]byte(configs.GetEnv("SECRET")))
+	if err != nil {
+		return response.AuthenticationResponse{}, err
+	}
+	authResponse := response.AuthenticationResponse{
+		Token: token,
+	}
+	return authResponse, nil
 }
 
 func (s *UserService) GetByID(id uuid.UUID) (response.GetUserResponse, error) {
@@ -50,7 +88,7 @@ func (s *UserService) GetByID(id uuid.UUID) (response.GetUserResponse, error) {
 func (s *UserService) Create(userReq request.CreateUserRequest) error {
 
 	// Verify if email exists
-	_, err := s.UserRepository.GetByEmail(userReq.Username)
+	_, err := s.UserRepository.GetByEmail(userReq.Email)
 	if err == nil {
 		return errors.New("email already in use")
 	}
@@ -70,13 +108,11 @@ func (s *UserService) Create(userReq request.CreateUserRequest) error {
 	var newUser model.User
 
 	// Create Password Hash
-	if userReq.Password != "" {
-		passwordHash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return err
-		}
-		newUser.PasswordHash = string(passwordHash)
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
 	}
+	newUser.PasswordHash = string(passwordHash)
 
 	newUser.FirstName = userReq.FirstName
 	newUser.LastName = userReq.LastName
