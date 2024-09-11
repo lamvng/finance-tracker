@@ -40,18 +40,12 @@ func (s *UserService) Auth(authReq request.AuthenticationRequest) (response.Auth
 
 	// Find existing username
 	user, err := s.UserRepository.GetByUsername(authReq.Username)
-
-	// Username not found
 	if err != nil {
 		return response.AuthenticationResponse{}, err
 	}
 
-	// Calculate and compare password hash
-	authPasswordHash, err := bcrypt.GenerateFromPassword([]byte(authReq.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return response.AuthenticationResponse{}, err
-	}
-	if string(authPasswordHash) != user.PasswordHash {
+	// Verify password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(authReq.Password)); err != nil {
 		return response.AuthenticationResponse{}, errors.New("password not correct")
 	}
 

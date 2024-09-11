@@ -21,7 +21,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 		// Find authorization token in header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header is missing"})
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -29,7 +29,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 		// Verify token format
 		authToken := strings.Split(authHeader, " ")
 		if len(authToken) != 2 || authToken[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token format"})
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}

@@ -20,7 +20,7 @@ func RegisterUserRoutes(router *gin.Engine, userController controller.UserContro
 
 	apiRouter := router.Group("/api")
 
-	// Unauthenticated requests
+	// Users
 	userRouter := apiRouter.Group("/users")
 	userRouter.POST("/login", userController.Auth)
 	userRouter.POST("", userController.Create)
@@ -28,10 +28,6 @@ func RegisterUserRoutes(router *gin.Engine, userController controller.UserContro
 	{
 		userRouter.GET("/:userId", userController.GetUserProfile)
 	}
-	// Authenticated requests
-
-	// tagRouter.PATCH("/:userId", userController.Update)
-	// tagRouter.DELETE("/:userId", userController.Delete)
 
 	return router
 }

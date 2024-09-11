@@ -8,12 +8,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/google/uuid"
 )
 
 type UserControllerInterface interface {
 	Auth(c *gin.Context)
 	GetUserProfile(c *gin.Context)
-	// GetByID(c *gin.Context)
+	GetByID(c *gin.Context)
 	Create(c *gin.Context)
 	// Update(c *gin.Context)
 	// Delete(c *gin.Context)
@@ -36,6 +37,7 @@ func (ctl *UserController) Auth(c *gin.Context) {
 	token, err := ctl.userService.Auth(authUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	authResponse := response.Response{
 		Code:   http.StatusOK,
@@ -43,7 +45,6 @@ func (ctl *UserController) Auth(c *gin.Context) {
 		Data:   token,
 	}
 	c.JSON(http.StatusOK, authResponse)
-	return
 }
 
 func (ctl *UserController) GetUserProfile(c *gin.Context) {
@@ -65,4 +66,27 @@ func (ctl *UserController) Create(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"status": "user created"})
+}
+
+func (ctl *UserController) GetByID(c *gin.Context) {
+	userIdString := c.Query("id")
+	if userIdString == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no user id parameter provided"})
+		return
+	}
+	userId, err := uuid.Parse(userIdString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "bad uuid format"})
+		return
+	}
+	userRes, err := ctl.userService.GetByID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, response.Response{
+		Code:   http.StatusOK,
+		Status: "success",
+		Data:   userRes,
+	})
 }

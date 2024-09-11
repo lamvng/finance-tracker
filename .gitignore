@@ -30,4 +30,4 @@ go.work.sum
 # .env
 
 # Dev client
-*.http
+*.py
