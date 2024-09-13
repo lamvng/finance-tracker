@@ -20,13 +20,16 @@ func RegisterUserRoutes(router *gin.Engine, userController controller.UserContro
 
 	apiRouter := router.Group("/api")
 
+	// Login
+	loginRouter := apiRouter.Group("/login")
+	loginRouter.POST("", userController.Auth)
+
 	// Users
 	userRouter := apiRouter.Group("/users")
-	userRouter.POST("/login", userController.Auth)
 	userRouter.POST("", userController.Create)
 	userRouter.Use(middleware.TokenAuthMiddleware())
 	{
-		userRouter.GET("/:userId", userController.GetUserProfile)
+		userRouter.GET("", userController.GetByID)
 	}
 
 	return router

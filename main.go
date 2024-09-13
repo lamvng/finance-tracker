@@ -13,6 +13,9 @@ import (
 	"github.com/golang/glog"
 )
 
+func init() {
+
+}
 func main() {
 
 	// TODO: Load config here, remove "configs" package

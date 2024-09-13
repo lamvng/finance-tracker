@@ -51,10 +51,10 @@ func (s *UserService) Auth(authReq request.AuthenticationRequest) (response.Auth
 
 	// Calculate and return JWT token
 	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,
-		"exp":      time.Now().Add(time.Hour * 1).Unix(),
+		"id":  user.ID,
+		"exp": time.Now().Add(time.Hour * 1).Unix(),
 	})
-	token, err := generateToken.SignedString([]byte(configs.GetEnv("SECRET")))
+	token, err := generateToken.SignedString([]byte(configs.GetEnv("JWT_TOKEN_SECRET")))
 	if err != nil {
 		return response.AuthenticationResponse{}, err
 	}

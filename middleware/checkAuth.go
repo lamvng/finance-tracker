@@ -6,6 +6,7 @@ import (
 	"lamvng/finance-tracker/service"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -34,45 +35,42 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Verify token
 		tokenString := authToken[1]
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
 			return []byte(configs.GetEnv("JWT_TOKEN_SECRET")), nil
 		})
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
-		fmt.Printf("%s\n%t\n", claims, ok)
-		// if !ok {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
-		// 	c.AbortWithStatus(http.StatusUnauthorized)
-		// 	return
-		// }
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
+		}
 
-		// if float64(time.Now().Unix()) > claims["exp"].(float64) {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
-		// 	c.AbortWithStatus(http.StatusUnauthorized)
-		// 	return
-		// }
+		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
 
-		// err := m.UserService.
-		// // var user model.User
-		// // error := database.DB.Where("ID=?", claims["id"]).Find(&user).Error
+		// var user model.User
+		// database.DB.Where("ID=?", claims["id"]).Find(&user)
 
-		// if error != nil {
+		// if user.ID == 0 {
 		// 	c.AbortWithStatus(http.StatusUnauthorized)
 		// 	return
 		// }
 
 		// c.Set("currentUser", user)
 
-		// c.Next()
+		c.Next()
 	}
 }
