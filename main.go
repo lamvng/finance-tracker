@@ -7,27 +7,26 @@ import (
 	"lamvng/finance-tracker/repository"
 	"lamvng/finance-tracker/route"
 	"lamvng/finance-tracker/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang/glog"
+	"github.com/joho/godotenv"
 )
 
 func init() {
 
-}
-func main() {
+	// Load Envs
+	if err := godotenv.Load(".env"); err != nil {
+		glog.Fatal(err)
+	}
 
-	// TODO: Load config here, remove "configs" package
-
-	// Init database connections
-	glog.Infoln("Initiating database connections...")
-	db := database.InitPostGresConnection()
-	validate := validator.New()
-	// rdb := database.InitRedisConnection()
+	database.InitPostGresConnection()
+	// database.InitRedisConnection()
 
 	// Migrate RDB tables
-	db.AutoMigrate(
+	database.DB.AutoMigrate(
 		&model.AccountType{},
 		&model.AssetType{},
 		&model.AssetUnit{},
@@ -48,9 +47,14 @@ func main() {
 		&model.LendingTransaction{},
 		&model.BudgetCategory{},
 	)
+}
+
+func main() {
+
+	validate := validator.New()
 
 	// Repository
-	userRepository := repository.NewUserRepository(db)
+	userRepository := repository.NewUserRepository(database.DB)
 
 	// Service
 	userService := service.NewUserService(userRepository, validate)
@@ -58,9 +62,17 @@ func main() {
 	// Controller
 	userController := controller.NewUserController(userService)
 
-	// Route
+	// Defaut routes
 	router := gin.Default()
-	route.RegisterUserRoutes(router, userController)
-	router.Run()
+	// router.GET("", func(context *gin.Context) {
+	// 	context.JSON(http.StatusOK, "welcome to homepage")
+	// })
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
+	})
 
+	// API routes
+	route.RegisterUserRoutes(router, userController)
+
+	router.Run()
 }

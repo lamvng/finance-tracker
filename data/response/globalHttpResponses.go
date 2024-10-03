@@ -1,7 +1,7 @@
 package response
 
 type Response struct {
-	Code   uint        `json:"code"`
-	Status string      `json:"status"`
-	Data   interface{} `json:"data,omitempty"`
+	Status  string      `json:"status"`
+	Message string      `json:"message,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }

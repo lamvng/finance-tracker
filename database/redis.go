@@ -2,18 +2,20 @@ package database
 
 import (
 	"fmt"
-	"lamvng/finance-tracker/configs"
+	"os"
 
 	"github.com/golang/glog"
 	"github.com/redis/go-redis/v9"
 )
 
-func InitRedisConnection() *redis.Client {
-	redisUser := configs.GetEnv("REDIS_USER")
-	redisPassword := configs.GetEnv("REDIS_PASSWORD")
-	redisDB := configs.GetEnv("REDIS_DB")
-	redisHost := configs.GetEnv("REDIS_HOST")
-	redisPort := configs.GetEnv("REDIS_PORT")
+var Cache *redis.Client
+
+func InitRedisConnection() {
+	redisUser := os.Getenv("REDIS_USER")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	redisDB := os.Getenv("REDIS_DB")
+	redisHost := os.Getenv("REDIS_HOST")
+	redisPort := os.Getenv("REDIS_PORT")
 
 	redisURL := fmt.Sprintf("redis://%s:%s@%s:%s/%s", redisUser, redisPassword, redisHost, redisPort, redisDB)
 
@@ -22,5 +24,5 @@ func InitRedisConnection() *redis.Client {
 		glog.Fatalf("Failed to connect to Redis: %s\n", err)
 	}
 
-	return redis.NewClient(Opt)
+	Cache = redis.NewClient(Opt)
 }

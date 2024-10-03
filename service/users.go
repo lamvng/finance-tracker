@@ -2,11 +2,11 @@ package service
 
 import (
 	"errors"
-	"lamvng/finance-tracker/configs"
 	"lamvng/finance-tracker/data/request"
 	"lamvng/finance-tracker/data/response"
 	"lamvng/finance-tracker/model"
 	"lamvng/finance-tracker/repository"
+	"os"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -19,8 +19,8 @@ import (
 type UserServiceInterface interface {
 	Auth(request.AuthenticationRequest) (response.AuthenticationResponse, error)
 	GetByID(id uuid.UUID) (response.GetUserResponse, error)
-	Create(user request.CreateUserRequest) error
-	// Update(user request.UpdateUserRequest) error
+	Create(userReq request.CreateUserRequest) error
+	Update(userReq request.UpdateUserRequest, userId uuid.UUID) error
 	// Delete(id uuid.UUID) error
 }
 
@@ -54,7 +54,7 @@ func (s *UserService) Auth(authReq request.AuthenticationRequest) (response.Auth
 		"id":  user.ID,
 		"exp": time.Now().Add(time.Hour * 1).Unix(),
 	})
-	token, err := generateToken.SignedString([]byte(configs.GetEnv("JWT_TOKEN_SECRET")))
+	token, err := generateToken.SignedString([]byte(os.Getenv("JWT_TOKEN_SECRET")))
 	if err != nil {
 		return response.AuthenticationResponse{}, err
 	}
@@ -65,9 +65,10 @@ func (s *UserService) Auth(authReq request.AuthenticationRequest) (response.Auth
 }
 
 func (s *UserService) GetByID(id uuid.UUID) (response.GetUserResponse, error) {
+
 	user, err := s.UserRepository.GetByID(id)
 	if err != nil {
-		return response.GetUserResponse{}, nil
+		return response.GetUserResponse{}, err
 	}
 	res := response.GetUserResponse{
 		ID:        uuid.UUID.String(user.ID),
@@ -117,6 +118,24 @@ func (s *UserService) Create(userReq request.CreateUserRequest) error {
 	return err
 }
 
-// func (s *UserService) Update(user request.CreateUserRequest) error {
+func (s *UserService) Update(userReq request.UpdateUserRequest, userId uuid.UUID) error {
+	user, err := s.UserRepository.GetByID(userId)
+	if err != nil {
+		return err
+	}
 
-// }
+	user.FirstName = userReq.FirstName
+	user.LastName = userReq.LastName
+	user.Email = userReq.Email
+	if userReq.Password != "" {
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+		user.PasswordHash = string(passwordHash)
+	}
+
+	// Update user in database
+	err = s.UserRepository.Update(user)
+	return err
+}
