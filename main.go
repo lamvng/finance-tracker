@@ -3,6 +3,7 @@ package main
 import (
 	"lamvng/finance-tracker/controller"
 	"lamvng/finance-tracker/database"
+	"lamvng/finance-tracker/middleware"
 	"lamvng/finance-tracker/model"
 	"lamvng/finance-tracker/repository"
 	"lamvng/finance-tracker/route"
@@ -53,17 +54,19 @@ func main() {
 
 	validate := validator.New()
 
-	// Repository
+	// Repositories
 	userRepository := repository.NewUserRepository(database.DB)
 
-	// Service
+	// Services
 	userService := service.NewUserService(userRepository, validate)
 
-	// Controller
+	// Controllers
 	userController := controller.NewUserController(userService)
 
-	// Defaut routes
+	// Routes
 	router := gin.Default()
+	router.Use(gin.Recovery())            // Panic recovery
+	router.Use(middleware.ErrorHandler()) // Error handling
 	// router.GET("", func(context *gin.Context) {
 	// 	context.JSON(http.StatusOK, "welcome to homepage")
 	// })

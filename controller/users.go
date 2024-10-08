@@ -33,22 +33,19 @@ func (ctl *UserController) Auth(c *gin.Context) {
 	var authUser request.AuthenticationRequest
 	if err := c.ShouldBindBodyWith(&authUser, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, response.Response{
-			Status:  "failed",
-			Message: err.Error(),
+			Description: err.Error(),
 		})
 		return
 	}
 	token, err := ctl.userService.Auth(authUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, response.Response{
-			Status:  "failed",
-			Message: err.Error(),
+			Description: err.Error(),
 		})
 		return
 	}
 	authResponse := response.Response{
-		Status: "ok",
-		Data:   token,
+		Data: token,
 	}
 	c.JSON(http.StatusOK, authResponse)
 }
@@ -64,28 +61,32 @@ func (ctl *UserController) Create(c *gin.Context) {
 	var newUser request.CreateUserRequest
 	if err := c.ShouldBindBodyWith(&newUser, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, response.Response{
-			Status:  "failed",
-			Message: err.Error(),
+			Description: err.Error(),
 		})
 		return
 	}
 	err := ctl.userService.Create(newUser)
+
+	if err != nil {
+		c.JSON(err.StatusCode, err)
+		c.Error(err)
+		return
+	}
+
+	// BUG: Catch error if email is found
 	if err == gorm.ErrRecordNotFound {
 		c.JSON(http.StatusBadRequest, response.Response{
-			Status:  "failed",
-			Message: err.Error(),
+			Description: err.Error(),
 		})
 		return
 	} else if err != nil {
 		c.JSON(http.StatusInternalServerError, response.Response{
-			Status:  "fatal",
-			Message: err.Error(),
+			Description: err.Error(),
 		})
 		return
 	}
 	c.JSON(http.StatusCreated, response.Response{
-		Status:  "success",
-		Message: "user created",
+		Description: "user created",
 	})
 }
 
@@ -93,8 +94,7 @@ func (ctl *UserController) GetByID(c *gin.Context) {
 	contextUserId, isExist := c.Get("userId")
 	if !isExist {
 		c.JSON(http.StatusBadRequest, response.Response{
-			Status:  "failed",
-			Message: "user ID parameter not found",
+			Description: "user ID parameter not found",
 		})
 		return
 	}
@@ -103,21 +103,18 @@ func (ctl *UserController) GetByID(c *gin.Context) {
 	userId, ok := contextUserId.(uuid.UUID)
 	if !ok {
 		c.JSON(http.StatusBadRequest, response.Response{
-			Status:  "failed",
-			Message: "bad user uuid format",
+			Description: "bad user uuid format",
 		})
 		return
 	}
 	userRes, err := ctl.userService.GetByID(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, response.Response{
-			Status:  "failed",
-			Message: err.Error(),
+			Description: err.Error(),
 		})
 		return
 	}
 	c.JSON(http.StatusOK, response.Response{
-		Status: "success",
-		Data:   userRes,
+		Data: userRes,
 	})
 }

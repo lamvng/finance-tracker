@@ -6,6 +6,7 @@ import (
 	"lamvng/finance-tracker/data/response"
 	"lamvng/finance-tracker/model"
 	"lamvng/finance-tracker/repository"
+	"net/http"
 	"os"
 	"time"
 
@@ -13,13 +14,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type UserServiceInterface interface {
 	Auth(request.AuthenticationRequest) (response.AuthenticationResponse, error)
 	GetByID(id uuid.UUID) (response.GetUserResponse, error)
-	Create(userReq request.CreateUserRequest) error
+	Create(userReq request.CreateUserRequest) *response.AppError
 	Update(userReq request.UpdateUserRequest, userId uuid.UUID) error
 	// Delete(id uuid.UUID) error
 }
@@ -80,33 +80,27 @@ func (s *UserService) GetByID(id uuid.UUID) (response.GetUserResponse, error) {
 	return res, nil
 }
 
-func (s *UserService) Create(userReq request.CreateUserRequest) error {
+func (s *UserService) Create(userReq request.CreateUserRequest) *response.AppError {
 
 	// Verify if email exists
 	_, err := s.UserRepository.GetByEmail(userReq.Email)
 	if err == nil {
-		return errors.New("email already in use")
-	}
-	if err != gorm.ErrRecordNotFound {
-		return err
+		return response.NewError(http.StatusConflict, "resource already exists")
 	}
 
 	// Verify if username exists
 	_, err = s.UserRepository.GetByUsername(userReq.Username)
 	if err == nil {
-		return errors.New("username already in use")
-	}
-	if err != gorm.ErrRecordNotFound {
-		return err
+		return response.NewError(http.StatusConflict, "resource already exists")
 	}
 
 	var newUser model.User
 
 	// Create Password Hash
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
+	// if err != nil {
+	// 	return response.Error(http.StatusConflict, "resource already exists")
+	// }
 	newUser.PasswordHash = string(passwordHash)
 
 	newUser.FirstName = userReq.FirstName
@@ -115,7 +109,10 @@ func (s *UserService) Create(userReq request.CreateUserRequest) error {
 	newUser.Email = userReq.Email
 
 	err = s.UserRepository.Create(newUser)
-	return err
+	if err != nil {
+		return response.NewError(http.StatusInternalServerError, err.Error())
+	}
+	return nil
 }
 
 func (s *UserService) Update(userReq request.UpdateUserRequest, userId uuid.UUID) error {
